@@ -1,10 +1,11 @@
 import { createStore } from "../helpers/createStore";
 
 export const commandTypes = [
+  "none",
   "form.clear",
   "input.create",
   "label.create",
-  "select.create",
+  "select.date.create",
   "button.create",
 ] as const;
 
@@ -18,23 +19,20 @@ type Command = {
   args?: string[];
 };
 
-export const commandStore = createStore<Command[]>([
-  {
-    type: "input.create",
-    input: 'input.create "First Name"',
-    args: ["First Name"],
-    id: 1,
-  },
-]);
+export const commandStore = createStore<Command[]>([]);
 
 export function addCommand(value: string) {
-  if (!commandTypes.find((type) => value.startsWith(type))) {
-    return;
-  }
+  const type =
+    commandTypes.find((type) => value.split(" ")[0] === type) ?? "none";
+  const secondPart = value
+    .substring(type?.length ?? value.length)
+    .trim()
+    .match(/("[^"]+"|\S+)/g)
+    ?.map((el) => el.replace(/"/g, ""));
 
   const command = {
-    type: value.split(" ")[0] as CommandType,
-    value: value.split(" ").slice(1),
+    type,
+    value: secondPart,
   };
 
   commandStore.setState((state) => [
