@@ -24,6 +24,9 @@ export const commandStore = createStore<Command[]>([]);
 export function addCommand(value: string) {
   const type =
     commandTypes.find((type) => value.split(" ")[0] === type) ?? "none";
+
+  if (type === "form.clear") return commandStore.setState(() => []);
+
   const secondPart = value
     .substring(type?.length ?? value.length)
     .trim()
