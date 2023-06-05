@@ -1,65 +1,72 @@
-export const commandTypes = [
-  "none",
-  "form.clear",
-  "input.create",
-  "label.create",
-  "select.date.create",
-  "button.create",
-] as const;
-
-// prettier-ignore
-export type CommandType = typeof commandTypes[number];
-
-export type Command = {
-  id: number;
-  input: string;
-  type: CommandType;
-  args?: string[];
-};
+import {
+  commandTypes,
+  viewTypes,
+  type ApplicationState,
+  type Command,
+  type CommandView,
+} from "~/core/models/types";
 
 export class CommandStore {
-  private currentState: Command[] = [];
-  private history: Command[] = [];
-  private listeners = new Set<(state: Command[]) => void>();
+  private applicationState: ApplicationState;
+  private listeners = new Set<(state: (CommandView | null)[]) => void>();
 
   constructor(initialState: Command[]) {
-    this.currentState = initialState;
-    this.history = initialState;
+    this.applicationState = {
+      history: initialState,
+      commandsView: [],
+    };
   }
 
-  private clearState(publish = true) {
-    this.currentState = [];
-
-    if (publish) {
-      this.listeners.forEach((listener) => listener(this.currentState));
-    }
+  private clearState() {
+    this.applicationState.commandsView = [];
   }
 
-  public subscribe(listener: (state: Command[]) => void) {
+  public subscribe(listener: (state: (CommandView | null)[]) => void) {
     this.listeners.add(listener);
 
     return () => this.listeners.delete(listener);
   }
 
+  private generateView = (command: Command): CommandView | null => {
+    if (command.type === "form.clear") {
+      return null;
+    }
+
+    const viewType = viewTypes.find((type) => command.type.includes(type));
+
+    if (!viewType) {
+      return null;
+    }
+
+    const type = (command.args?.[1] ?? "text") as CommandView["type"];
+
+    return {
+      id: command.type,
+      name: command.args?.[0] ?? "",
+      viewType,
+      type,
+    };
+  };
+
   public setState(fn: (state: Command[]) => Command[], publish = true) {
-    this.currentState = fn(this.currentState);
-    this.history = [...this.currentState];
+    this.applicationState.history = fn(this.applicationState.history);
+    this.applicationState.commandsView = this.applicationState.history.map(
+      this.generateView
+    );
 
     if (publish) {
-      this.listeners.forEach((listener) => listener(this.currentState));
+      this.listeners.forEach((listener) =>
+        listener(this.applicationState.commandsView)
+      );
     }
   }
 
-  public getState(): Command[] {
-    return this.currentState;
+  public getView(): (CommandView | null)[] {
+    return this.applicationState.commandsView;
   }
 
   public getHistory(): Command[] {
-    return this.history;
-  }
-
-  public emitChanges() {
-    this.listeners.forEach((listener) => listener(this.currentState));
+    return this.applicationState.history;
   }
 
   /**
