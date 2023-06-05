@@ -20,6 +20,7 @@ specifiers:
   prettier: ^2.8.8
   react: 18.2.0
   react-dom: 18.2.0
+  rxjs: ^7.8.1
   typescript: ^5.0.4
   zod: ^3.21.4
 
@@ -33,6 +34,7 @@ dependencies:
   next: 13.4.4_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  rxjs: 7.8.1
   zod: 3.21.4
 
 devDependencies:
@@ -3928,6 +3930,12 @@ packages:
     dependencies:
       queue-microtask: 1.2.3
     dev: true
+
+  /rxjs/7.8.1:
+    resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
+    dependencies:
+      tslib: 2.5.2
+    dev: false
 
   /safe-regex-test/1.0.0:
     resolution: {integrity: sha512-JBUUzyOgEwXQY1NuPtvcj/qcBDbDmEvWufhlnXZIm75DEHp+afM1r1ujJpJsV/gSM4t59tpDyPi1sd6ZaPFfsA==}
