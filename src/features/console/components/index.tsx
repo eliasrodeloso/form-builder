@@ -1,13 +1,13 @@
 import { useSyncExternalStore, type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
-import { addCommand, commandStore } from "~/core/store/commands";
+import { commandsStore } from "~/core/store/commands";
 
 export function Console() {
   const commands = useSyncExternalStore(
-    commandStore.subscribe,
-    commandStore.getState,
-    commandStore.getState
+    (state) => commandsStore.subscribe(state),
+    () => commandsStore.getHistory(),
+    () => commandsStore.getHistory()
   );
 
   const formSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
@@ -17,7 +17,7 @@ export function Console() {
     const data = new FormData(form);
     const command = data.get("commands") as string;
 
-    addCommand(command);
+    commandsStore.addCommand(command);
     form.reset();
   };
 
