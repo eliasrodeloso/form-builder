@@ -1,35 +1,16 @@
-export const commandTypes = [
-  "none",
-  "form.clear",
-  "input.create",
-  "label.create",
-  "select.date.create",
-  "button.create",
-] as const;
-
-// prettier-ignore
-export type CommandType = typeof commandTypes[number];
-
 export const viewTypes = ["input", "label", "select", "button"] as const;
 
 // prettier-ignore
 export type ViewType = typeof viewTypes[number];
 
-export type Command = {
+export type ViewElement = {
   id: number;
-  input: string;
-  type: CommandType;
-  args?: string[];
-};
-
-export type CommandView = {
-  id: CommandType;
   viewType: ViewType;
-  name: string;
-  type?: "password" | "text";
+  type: "password" | "text" | "submit" | "date";
+  value?: string;
+  name?: string;
 };
 
 export type ApplicationState = {
-  commandsView: (CommandView | null)[];
-  history: Command[];
+  state: Set<ViewElement>;
 };

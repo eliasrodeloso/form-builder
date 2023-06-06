@@ -7,7 +7,7 @@ export function commandAnalyzer(input: string) {
 
   if (!commandElement || !commandAction) {
     return {
-      type: "none",
+      type: "none" as CommandType,
       args: [],
     };
   }
