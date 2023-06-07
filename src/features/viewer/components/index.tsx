@@ -1,13 +1,13 @@
 import { useSyncExternalStore } from "react";
 import { Box, Container } from "@chakra-ui/react";
 
-import { commands } from "~/core/store/commands";
+import { applicationService } from "~/core/services/application";
 
 export function Viewer() {
   const appState = useSyncExternalStore(
-    (listener) => commands.subscribe(listener),
-    () => commands.getViewStateSnapshot(),
-    () => commands.getViewStateSnapshot()
+    (listener) => applicationService.subscribe(listener),
+    () => applicationService.getViewStateSnapshot(),
+    () => applicationService.getViewStateSnapshot()
   );
 
   return (
