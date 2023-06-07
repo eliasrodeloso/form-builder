@@ -1,24 +1,17 @@
 import { commandCreators } from "~/core/commands";
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
-import { type Command } from "~/core/commands/types";
-import { type ApplicationState, type ViewElement } from "~/core/models/types";
+import { type HistoryItem } from "~/core/commands/types";
+import { type ApplicationState } from "~/core/models/types";
 
 export class CommandModel {
   private applicationState: ApplicationState;
-  private history: Command[];
-  private listeners = new Set<(state: (ViewElement | null)[]) => void>();
+  private history: HistoryItem[];
+  private historyListeners = new Set<() => void>();
+  private listeners = new Set<() => void>();
 
-  constructor(initialState: Command[]) {
-    this.history = initialState;
-    this.applicationState = {
-      state: new Set<ViewElement>(),
-    };
-  }
-
-  private clearState() {
-    this.applicationState = {
-      state: new Set<ViewElement>(),
-    };
+  constructor(initialHistory: HistoryItem[]) {
+    this.history = initialHistory;
+    this.applicationState = [];
   }
 
   /**
@@ -27,7 +20,7 @@ export class CommandModel {
    * @param value any string that starts with a command type
    */
   public addCommand(commandInput: string) {
-    const { type, args } = commandAnalyzer(commandInput);
+    const { type } = commandAnalyzer(commandInput);
 
     const command = commandCreators[type];
 
@@ -35,17 +28,37 @@ export class CommandModel {
       return;
     }
 
-    const applicationState = command?.handler(
+    this.applicationState = command.handler(
       commandInput,
       this.applicationState
     );
+    this.history = command.historyHandler(commandInput, this.history);
 
-    this.applicationState = applicationState ?? this.applicationState;
+    this.emitChanges();
   }
 
-  // public subscribe(listener: (state: (ViewElement | null)[]) => void) {
-  //   this.listeners.add(listener);
+  private emitChanges() {
+    this.listeners.forEach((listener) => listener());
+    this.historyListeners.forEach((listener) => listener());
+  }
 
-  //   return () => this.listeners.delete(listener);
-  // }
+  public subscribe(listener: () => void) {
+    this.listeners.add(listener);
+
+    return () => this.listeners.delete(listener);
+  }
+
+  public subscribeHistory(listener: () => void) {
+    this.historyListeners.add(listener);
+
+    return () => this.historyListeners.delete(listener);
+  }
+
+  public getHistorySnapshot() {
+    return this.history;
+  }
+
+  public getViewStateSnapshot() {
+    return this.applicationState;
+  }
 }

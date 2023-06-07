@@ -1,3 +1,3 @@
-import { CommandStore } from "~/core/models/Commands";
+import { CommandModel } from "~/core/models/Commands";
 
-export const commandsStore = new CommandStore([]);
+export const commands = new CommandModel([]);
