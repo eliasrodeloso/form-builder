@@ -3,10 +3,13 @@ import { Grid, GridItem } from "@chakra-ui/react";
 import { type NextPage } from "next";
 import Head from "next/head";
 
+import { initializeApplicationService } from "~/core/services/application";
 import { Console } from "~/features/console/components";
 import { Viewer } from "~/features/viewer/components";
 
 const Home: NextPage = () => {
+  initializeApplicationService([]);
+
   return (
     <Fragment>
       <Head>
