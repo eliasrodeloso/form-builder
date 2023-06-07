@@ -1,6 +1,6 @@
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command, type HistoryItem } from "~/core/commands/types";
-import { type ApplicationState } from "~/core/models/types";
+import { type ApplicationState } from "~/core/services/types";
 
 export const labelActions: Record<"create", Command> = {
   create: {

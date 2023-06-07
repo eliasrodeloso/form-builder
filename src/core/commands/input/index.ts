@@ -1,6 +1,6 @@
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command } from "~/core/commands/types";
-import { type ApplicationState, type ViewElement } from "~/core/models/types";
+import { type ApplicationState, type ViewElement } from "~/core/services/types";
 
 export const inputActions: Record<"create", Command> = {
   create: {

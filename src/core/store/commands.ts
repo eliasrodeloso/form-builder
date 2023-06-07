@@ -1,3 +1,3 @@
-import { CommandModel } from "~/core/models/Commands";
+import { ApplicationService } from "~/core/services/application";
 
-export const commands = new CommandModel([]);
+export const commands = new ApplicationService([]);

@@ -1,5 +1,5 @@
 import { type Command } from "~/core/commands/types";
-import { type ApplicationState } from "~/core/models/types";
+import { type ApplicationState } from "~/core/services/types";
 
 export const formActions: Record<"clear", Command> = {
   clear: {

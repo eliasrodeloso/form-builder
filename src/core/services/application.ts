@@ -1,9 +1,9 @@
 import { commandCreators } from "~/core/commands";
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type HistoryItem } from "~/core/commands/types";
-import { type ApplicationState } from "~/core/models/types";
+import { type ApplicationState } from "~/core/services/types";
 
-export class CommandModel {
+export class ApplicationService {
   private applicationState: ApplicationState;
   private history: HistoryItem[];
   private historyListeners = new Set<() => void>();

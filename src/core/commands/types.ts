@@ -1,4 +1,4 @@
-import { type ApplicationState } from "~/core/models/types";
+import { type ApplicationState } from "~/core/services/types";
 
 export const commandElements = [
   "input",
