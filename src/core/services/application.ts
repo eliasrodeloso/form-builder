@@ -1,64 +1,85 @@
+import { BehaviorSubject, EMPTY, Subject } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
+
 import { commandCreators } from "~/core/commands";
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
-import { type HistoryItem } from "~/core/commands/types";
+import { type HistoryItem, type HistoryState } from "~/core/commands/types";
 import { type ApplicationState } from "~/core/services/types";
 
 export class ApplicationService {
-  private applicationState: ApplicationState;
-  private history: HistoryItem[];
-  private historyListeners = new Set<() => void>();
-  private listeners = new Set<() => void>();
+  private applicationState: BehaviorSubject<ApplicationState>;
+  private history: BehaviorSubject<HistoryState>;
+  private commandInput: Subject<string>;
 
   constructor(initialHistory: HistoryItem[]) {
-    this.history = initialHistory;
-    this.applicationState = [];
+    this.applicationState = new BehaviorSubject<ApplicationState>([]);
+    this.history = new BehaviorSubject(initialHistory);
+    this.commandInput = new Subject<string>();
+
+    this.commandInput
+      .pipe(
+        map((commandInput) => {
+          const { type } = commandAnalyzer(commandInput);
+          const command = commandCreators[type];
+          return { command, commandInput };
+        }),
+        switchMap(({ command, commandInput }) => {
+          if (!command) {
+            return EMPTY;
+          }
+
+          const newState = command.handler(
+            commandInput,
+            this.applicationState.value
+          );
+          const newHistory = command.historyHandler(
+            commandInput,
+            this.history.value
+          );
+
+          this.applicationState.next(newState);
+          this.history.next(newHistory);
+
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
-  /**
-   * Controller to add a command to the store
-   *
-   * @param value any string that starts with a command type
-   */
   public addCommand(commandInput: string) {
-    const { type } = commandAnalyzer(commandInput);
-
-    const command = commandCreators[type];
-
-    if (!command) {
-      return;
-    }
-
-    this.applicationState = command.handler(
-      commandInput,
-      this.applicationState
-    );
-    this.history = command.historyHandler(commandInput, this.history);
-
-    this.emitChanges();
-  }
-
-  private emitChanges() {
-    this.listeners.forEach((listener) => listener());
-    this.historyListeners.forEach((listener) => listener());
+    console.log("calling addCommand");
+    this.commandInput.next(commandInput);
   }
 
   public subscribe(listener: () => void) {
-    this.listeners.add(listener);
+    const subscription = this.applicationState
+      .asObservable()
+      .subscribe(listener);
 
-    return () => this.listeners.delete(listener);
+    return () => {
+      subscription.unsubscribe();
+    };
   }
 
   public subscribeHistory(listener: () => void) {
-    this.historyListeners.add(listener);
+    const subscription = this.history.asObservable().subscribe(listener);
 
-    return () => this.historyListeners.delete(listener);
+    return () => {
+      subscription.unsubscribe();
+    };
   }
 
   public getHistorySnapshot() {
-    return this.history;
+    return this.history.value;
   }
 
   public getViewStateSnapshot() {
-    return this.applicationState;
+    return this.applicationState.value;
   }
+}
+
+export let applicationService: ApplicationService;
+
+export function initializeApplicationService(initialHistory: HistoryItem[]) {
+  applicationService = new ApplicationService(initialHistory);
 }

@@ -21,6 +21,8 @@ export type HistoryItem = {
   input: string;
 };
 
+export type HistoryState = HistoryItem[];
+
 export type Command = {
   type: CommandType;
   handler: (input: string, appState: ApplicationState) => ApplicationState;
