@@ -1,13 +1,13 @@
 import { useSyncExternalStore, type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
-import { commandsStore } from "~/core/store/commands";
+import { commands } from "~/core/store/commands";
 
 export function Console() {
-  const commands = useSyncExternalStore(
-    (state) => commandsStore.subscribe(state),
-    () => commandsStore.getHistory(),
-    () => commandsStore.getHistory()
+  const historyStore = useSyncExternalStore(
+    (listener) => commands.subscribeHistory(listener),
+    () => commands.getHistorySnapshot(),
+    () => commands.getHistorySnapshot()
   );
 
   const formSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
@@ -17,9 +17,11 @@ export function Console() {
     const data = new FormData(form);
     const command = data.get("commands") as string;
 
-    commandsStore.addCommand(command);
+    commands.addCommand(command);
     form.reset();
   };
+
+  console.log(historyStore);
 
   return (
     <Grid
@@ -28,8 +30,8 @@ export function Console() {
       gridTemplateRows="1fr 100px"
     >
       <Box p={2}>
-        {commands.map((command) => (
-          <div key={command.id}>
+        {historyStore.map((command, index) => (
+          <div key={`${command.type}-${command.input ?? ""}-${index}`}>
             <p>{command.input}</p>
           </div>
         ))}
