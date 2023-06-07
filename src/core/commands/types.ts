@@ -16,9 +16,15 @@ export type CommandAction = typeof commandActions[number];
 
 export type CommandType = `${CommandElement}.${CommandAction}`;
 
+export type HistoryItem = {
+  type: CommandType;
+  input: string;
+};
+
 export type Command = {
   type: CommandType;
   handler: (input: string, appState: ApplicationState) => ApplicationState;
+  historyHandler: (input: string, history: HistoryItem[]) => HistoryItem[];
 };
 
 export type Commands = { [key in CommandType]?: Command };

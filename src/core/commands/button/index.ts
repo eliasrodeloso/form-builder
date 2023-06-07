@@ -9,16 +9,26 @@ export const buttonActions: Record<"create", Command> = {
       const { args } = commandAnalyzer(input);
       const [value = "", typeInput = "submit"] = args ?? [];
 
-      const newState = new Set(appState.state);
-
-      return {
-        state: newState.add({
-          id: newState.size + 1,
+      return [
+        ...appState,
+        {
+          id: appState.length + 1,
           viewType: "button",
           type: typeInput as ViewElement["type"],
           value,
-        }),
-      };
+        },
+      ];
+    },
+    historyHandler: (input: string, history) => {
+      const { type } = commandAnalyzer(input);
+
+      return [
+        ...history,
+        {
+          input: input,
+          type,
+        },
+      ];
     },
   },
 };
