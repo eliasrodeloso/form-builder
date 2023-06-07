@@ -1,14 +1,11 @@
-import { useSyncExternalStore, type FormEvent } from "react";
+import { type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
+import { useObservable } from "~/core/hooks/useObservable";
 import { applicationService } from "~/core/services/application";
 
 export function Console() {
-  const historyStore = useSyncExternalStore(
-    (listener) => applicationService.subscribeHistory(listener),
-    () => applicationService.getHistorySnapshot(),
-    () => applicationService.getHistorySnapshot()
-  );
+  const historyStore = useObservable(applicationService.onHistoryState());
 
   const formSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,6 +18,8 @@ export function Console() {
     form.reset();
   };
 
+  console.log("skjdsad", historyStore);
+
   return (
     <Grid
       height="100%"
@@ -28,7 +27,7 @@ export function Console() {
       gridTemplateRows="1fr 100px"
     >
       <Box p={2}>
-        {historyStore.map((command, index) => (
+        {historyStore?.map((command, index) => (
           <div key={`${command.type}-${command.input ?? ""}-${index}`}>
             <p>{command.input}</p>
           </div>
