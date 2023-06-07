@@ -1,4 +1,4 @@
-import { BehaviorSubject, EMPTY, Subject } from "rxjs";
+import { BehaviorSubject, EMPTY, Subject, type Observable } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 
 import { commandCreators } from "~/core/commands";
@@ -47,34 +47,15 @@ export class ApplicationService {
   }
 
   public addCommand(commandInput: string) {
-    console.log("calling addCommand");
     this.commandInput.next(commandInput);
   }
 
-  public subscribe(listener: () => void) {
-    const subscription = this.applicationState
-      .asObservable()
-      .subscribe(listener);
-
-    return () => {
-      subscription.unsubscribe();
-    };
+  public onApplicationState(): Observable<ApplicationState> {
+    return this.applicationState.asObservable();
   }
 
-  public subscribeHistory(listener: () => void) {
-    const subscription = this.history.asObservable().subscribe(listener);
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }
-
-  public getHistorySnapshot() {
-    return this.history.value;
-  }
-
-  public getViewStateSnapshot() {
-    return this.applicationState.value;
+  public onHistoryState(): Observable<HistoryState> {
+    return this.history.asObservable();
   }
 }
 
