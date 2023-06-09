@@ -1,3 +1,5 @@
+import { type DynamicTool } from "langchain/tools";
+
 import { type ApplicationState } from "~/core/services/types";
 
 export const commandElements = [
@@ -27,6 +29,7 @@ export type Command = {
   type: CommandType;
   handler: (input: string, appState: ApplicationState) => ApplicationState;
   historyHandler: (input: string, history: HistoryItem[]) => HistoryItem[];
+  tool: DynamicTool;
 };
 
 export type Commands = { [key in CommandType]?: Command };

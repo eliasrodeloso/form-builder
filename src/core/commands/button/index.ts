@@ -1,3 +1,5 @@
+import { DynamicTool } from "langchain/tools";
+
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command } from "~/core/commands/types";
 import { type ApplicationState, type ViewElement } from "~/core/services/types";
@@ -30,5 +32,15 @@ export const buttonActions: Record<"create", Command> = {
         },
       ];
     },
+    tool: new DynamicTool({
+      name: "button",
+      description: "A button that can be clicked to trigger an action",
+      func: async (input, runManager) => {
+        console.log("input", input);
+        console.log("runManager", runManager);
+
+        return Promise.resolve("button.create");
+      },
+    }),
   },
 };

@@ -1,3 +1,5 @@
+import { DynamicTool } from "langchain/tools";
+
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command } from "~/core/commands/types";
 import { type ApplicationState, type ViewElement } from "~/core/services/types";
@@ -30,5 +32,13 @@ export const inputActions: Record<"create", Command> = {
         },
       ];
     },
+    tool: new DynamicTool({
+      name: "input.create",
+      description:
+        "Creates a new HTML input element in the form with the specified name and type.",
+      func: async () => {
+        return Promise.resolve("input.create");
+      },
+    }),
   },
 };

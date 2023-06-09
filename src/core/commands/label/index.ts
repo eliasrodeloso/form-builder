@@ -1,3 +1,5 @@
+import { DynamicTool } from "langchain/tools";
+
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command, type HistoryItem } from "~/core/commands/types";
 import { type ApplicationState } from "~/core/services/types";
@@ -29,5 +31,12 @@ export const labelActions: Record<"create", Command> = {
         },
       ];
     },
+    tool: new DynamicTool({
+      name: "label.create",
+      description: "Creates a label in the form with the given value",
+      func: (labelName) => {
+        return Promise.resolve(`label.create "${labelName}"`);
+      },
+    }),
   },
 };
