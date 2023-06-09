@@ -18,8 +18,6 @@ export function Console() {
     form.reset();
   };
 
-  console.log("skjdsad", historyStore);
-
   return (
     <Grid
       height="100%"
