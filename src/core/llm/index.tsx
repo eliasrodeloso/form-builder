@@ -2,6 +2,7 @@ import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { OpenAI } from "langchain/llms/openai";
 
 import { buttonActions } from "~/core/commands/button";
+import { formActions } from "~/core/commands/form";
 import { env } from "~/env.mjs";
 
 export async function agent(input: string) {
@@ -11,7 +12,7 @@ export async function agent(input: string) {
     temperature: 0,
   });
 
-  const tools = [buttonActions.create.tool];
+  const tools = [buttonActions.create.tool, formActions.create.tool];
 
   const executor = await initializeAgentExecutorWithOptions(tools, model, {
     agentType: "zero-shot-react-description",

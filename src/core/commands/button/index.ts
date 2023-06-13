@@ -34,12 +34,13 @@ export const buttonActions: Record<"create", Command> = {
     },
     tool: new DynamicTool({
       name: "button",
-      description: "A button that can be clicked to trigger an action",
+      description:
+        "Creates a button element in the form. Input is the value of the button.",
       func: async (input, runManager) => {
         console.log("input", input);
         console.log("runManager", runManager);
 
-        return Promise.resolve("button.create");
+        return "Button created successfully!";
       },
     }),
   },

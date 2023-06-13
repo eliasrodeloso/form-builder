@@ -10,11 +10,13 @@ export class ApplicationService {
   private applicationState: BehaviorSubject<ApplicationState>;
   private history: BehaviorSubject<HistoryState>;
   private commandInput: Subject<string>;
+  private consoleInput: Subject<string>;
 
   constructor(initialHistory: HistoryItem[]) {
     this.applicationState = new BehaviorSubject<ApplicationState>([]);
     this.history = new BehaviorSubject(initialHistory);
     this.commandInput = new Subject<string>();
+    this.consoleInput = new Subject<string>();
 
     this.commandInput
       .pipe(
@@ -44,6 +46,8 @@ export class ApplicationService {
         })
       )
       .subscribe();
+
+    this.consoleInput.subscribe((input: string) => {});
   }
 
   public addCommand(commandInput: string) {
@@ -56,6 +60,10 @@ export class ApplicationService {
 
   public onHistoryState(): Observable<HistoryState> {
     return this.history.asObservable();
+  }
+
+  public executeInput(input: string) {
+    this.consoleInput.next(input);
   }
 }
 
