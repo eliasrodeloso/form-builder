@@ -1,7 +1,7 @@
 import { type NextApiHandler } from "next";
 import { z } from "zod";
 
-import { agent } from "~/core/llm";
+import { agent } from "~/core/agent";
 
 const handler: NextApiHandler = async (req, res) => {
   try {

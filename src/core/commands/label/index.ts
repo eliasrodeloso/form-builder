@@ -1,7 +1,13 @@
 import { DynamicTool } from "langchain/tools";
+import { z } from "zod";
 
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
-import { type Command, type HistoryItem } from "~/core/commands/types";
+import {
+  type Command,
+  type HistoryItem,
+  type RefactoredCommand,
+} from "~/core/commands/types";
+import { applicationService } from "~/core/services/application";
 import { type ApplicationState } from "~/core/services/types";
 
 export const labelActions: Record<"create", Command> = {
@@ -38,5 +44,28 @@ export const labelActions: Record<"create", Command> = {
         return Promise.resolve(`label.create "${labelName}"`);
       },
     }),
+  },
+};
+
+export const labelInput = z
+  .string()
+  .min(1, "Label name must be at least 1 character long");
+
+export type LabelInputSchema = z.infer<typeof labelInput>;
+
+export const labelCommand: RefactoredCommand = {
+  type: "label.create",
+  description:
+    "Creates a label in the form with the given value. Value is an string that contains the value of the label",
+  create: (input: LabelInputSchema) => {
+    const validationResult = labelInput.safeParse(input);
+
+    if (!validationResult.success) {
+      return validationResult.error.message;
+    }
+
+    applicationService.addCommand(`label.create "${input}"`);
+
+    return "Label created successfully";
   },
 };

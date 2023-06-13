@@ -46,8 +46,6 @@ export class ApplicationService {
         })
       )
       .subscribe();
-
-    this.consoleInput.subscribe((input: string) => {});
   }
 
   public addCommand(commandInput: string) {

@@ -12,7 +12,7 @@ export async function agent(input: string) {
     temperature: 0,
   });
 
-  const tools = [buttonActions.create.tool, formActions.create.tool];
+  const tools = [];
 
   const executor = await initializeAgentExecutorWithOptions(tools, model, {
     agentType: "zero-shot-react-description",

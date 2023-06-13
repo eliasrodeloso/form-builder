@@ -32,12 +32,12 @@ export type Command = {
 };
 
 // just for poc
-export type RefactoredCommand = {
+export interface RefactoredCommand {
   type: CommandType;
-  handler: (input: string, appState: ApplicationState) => ApplicationState;
-  historyHandler: (input: string, history: HistoryItem[]) => HistoryItem[];
   description: string;
-  create: boolean;
-};
+  create: (input: string) => string;
+  handler?: (input: string, appState: ApplicationState) => ApplicationState;
+  historyHandler?: (input: string, history: HistoryItem[]) => HistoryItem[];
+}
 
 export type Commands = { [key in CommandType]?: Command };

@@ -1,5 +1,5 @@
-import { type Tool } from "langchain/tools";
+import { type DynamicTool } from "langchain/tools";
 
-import { type Command } from "~/core/commands/types";
+import { type RefactoredCommand } from "~/core/commands/types";
 
-export type ToolCreator = (command: Command) => Tool;
+export type ToolCreator = (command: RefactoredCommand) => DynamicTool;
