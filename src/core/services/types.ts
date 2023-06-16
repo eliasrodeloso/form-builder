@@ -1,12 +1,23 @@
-export const viewTypes = ["input", "label", "select", "button"] as const;
+import { type CommandType } from "~/core/commands/types";
 
-// prettier-ignore
-export type ViewType = typeof viewTypes[number];
+export enum ViewTypes {
+  "input" = "input",
+  "label" = "label",
+  "select" = "select",
+  "button" = "button",
+}
 
 export type ViewElement = {
   id: number;
-  viewType: ViewType;
+  viewType: ViewTypes;
   component: React.ReactNode;
 };
 
 export type ApplicationState = ViewElement[];
+
+export type HistoryItem = {
+  type: CommandType;
+  input: string;
+};
+
+export type HistoryState = HistoryItem[];
