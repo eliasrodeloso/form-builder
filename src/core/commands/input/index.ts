@@ -36,7 +36,7 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
       return validationResult.error.message;
     }
 
-    // this.handler(validationResult.data);
+    this.handler(validationResult.data);
 
     return Promise.resolve("Input created successfully!");
   };

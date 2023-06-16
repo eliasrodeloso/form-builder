@@ -18,13 +18,14 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
 
   public create = async (input: string) => {
     console.log(this.type, input);
+
     const validationResult = buttonValidationSchema.safeParse(input);
 
     if (!validationResult.success) {
       return validationResult.error.message;
     }
 
-    // this.handler(input);
+    this.handler(input);
 
     return Promise.resolve("Button created successfully");
   };

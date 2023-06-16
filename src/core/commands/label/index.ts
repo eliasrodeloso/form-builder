@@ -25,7 +25,7 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
       return validationResult.error.message;
     }
 
-    // this.handler(input);
+    this.handler(input);
 
     return Promise.resolve("Label created successfully!");
   };

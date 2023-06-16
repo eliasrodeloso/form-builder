@@ -28,7 +28,8 @@ export class CreateFormCommand implements Command<void> {
 
   public create = async () => {
     console.log(this.type);
-    // this.handler();
+
+    this.handler();
 
     return Promise.resolve("Form created successfully");
   };
