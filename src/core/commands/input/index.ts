@@ -1,44 +1,60 @@
-import { DynamicTool } from "langchain/tools";
+import { z } from "zod";
 
-import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
-import { type Command } from "~/core/commands/types";
-import { type ApplicationState, type ViewElement } from "~/core/services/types";
+import { makeInput } from "~/core/commands/input/makeInput";
+import { CommandType, type Command } from "~/core/commands/types";
+import { applicationService } from "~/core/services/application";
+import { ViewTypes } from "~/core/services/types";
 
-export const inputActions: Record<"create", Command> = {
-  create: {
-    type: "input.create",
-    handler: (input: string, appState: ApplicationState) => {
-      const { args } = commandAnalyzer(input);
-      const [name = "defaultName", typeInput = "text"] = args ?? [];
+export const inputParams = z.object({
+  inputName: z.string(),
+  inputType: z
+    .enum(["text", "number", "password", "email", "date"])
+    .optional()
+    .default("text"),
+});
 
-      return [
+export type InputParamsSchema = z.infer<typeof inputParams>;
+
+export class CreateInputCommand implements Command<InputParamsSchema> {
+  public type = CommandType.CreateInput;
+  public description =
+    "Creates a new HTML input element in the form with the specified <name> and <type> parameters. <name> is an string containing the name of the input. <type> is an string containing the type of the input and is defaulted to text if not specified. These parameters should be sent as a single string separated by a comma.";
+
+  public create(input: string) {
+    const [inputName, inputType] = input
+      .split(",")
+      .map((param) => param.trim());
+
+    const validationResult = inputParams.safeParse({
+      inputName,
+      inputType,
+    });
+
+    if (!validationResult.success) {
+      return validationResult.error.message;
+    }
+
+    this.handler(validationResult.data);
+
+    return "Input created successfully!";
+  }
+
+  public handler(params: InputParamsSchema) {
+    const appState = applicationService.getApplicationState();
+
+    applicationService.updateApplicationState(
+      [
         ...appState,
         {
           id: appState.length + 1,
-          viewType: "input",
-          type: typeInput as ViewElement["type"],
-          name: name,
+          viewType: ViewTypes.input,
+          component: makeInput([params.inputName, params.inputType]),
         },
-      ];
-    },
-    historyHandler: (input: string, history) => {
-      const { type } = commandAnalyzer(input);
-
-      return [
-        ...history,
-        {
-          input: input,
-          type,
-        },
-      ];
-    },
-    tool: new DynamicTool({
-      name: "input.create",
-      description:
-        "Creates a new HTML input element in the form with the specified name and type.",
-      func: async () => {
-        return Promise.resolve("input.create");
-      },
-    }),
-  },
-};
+      ],
+      {
+        input: [params.inputName, params.inputType].join(", "),
+        type: this.type,
+      }
+    );
+  }
+}

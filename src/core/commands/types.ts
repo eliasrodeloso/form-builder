@@ -5,11 +5,9 @@ export enum CommandType {
   CreateButton = "button.create",
   ClearForm = "form.clear",
 }
-export interface Command {
+export interface Command<ValidationSchema> {
   type: CommandType;
   description: string;
   create: (input: string) => string;
-  handler: <Schema>(labelValue: Schema) => void;
+  handler(value: ValidationSchema): void;
 }
-
-export type Commands = { [key in CommandType]?: Command };

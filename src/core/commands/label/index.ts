@@ -12,12 +12,12 @@ export const labelInput = z
 
 export type LabelInputSchema = z.infer<typeof labelInput>;
 
-export class LabelCommand implements Command {
+export class LabelCommand implements Command<LabelInputSchema> {
   public type = CommandType.CreateLabel;
   public description =
     "Creates a label in the form with the given value. Value is an string that contains the value of the label";
 
-  public create(input: LabelInputSchema) {
+  public create(input: string) {
     const validationResult = labelInput.safeParse(input);
 
     if (!validationResult.success) {
@@ -29,8 +29,8 @@ export class LabelCommand implements Command {
     return "Label created successfully";
   }
 
-  public handler = <LabelInputSchema>(input: LabelInputSchema) => {
-    const { args } = commandAnalyzer(input as string);
+  public handler = (input: LabelInputSchema) => {
+    const { args } = commandAnalyzer(input);
     const [value = ""] = args ?? [];
 
     const appState = applicationService.getApplicationState();

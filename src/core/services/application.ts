@@ -1,7 +1,7 @@
 import { BehaviorSubject, type Observable } from "rxjs";
 
 import { historyService } from "~/core/services/history";
-import { HistoryItem, type ApplicationState } from "~/core/services/types";
+import { type ApplicationState, type HistoryItem } from "~/core/services/types";
 
 export class ApplicationService {
   private applicationState: BehaviorSubject<ApplicationState>;

@@ -10,7 +10,7 @@ export enum ViewTypes {
 export type ViewElement = {
   id: number;
   viewType: ViewTypes;
-  component: React.ReactNode;
+  component: React.FC;
 };
 
 export type ApplicationState = ViewElement[];
