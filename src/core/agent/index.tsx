@@ -1,18 +1,27 @@
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { OpenAI } from "langchain/llms/openai";
 
-import { buttonActions } from "~/core/commands/button";
-import { formActions } from "~/core/commands/form";
+import {
+  CreateButtonCommand,
+  CreateInputCommand,
+  CreateLabelCommand,
+} from "~/core/commands";
+import { CreateFormCommand } from "~/core/commands/form";
+import { toolCreator } from "~/core/tools";
 import { env } from "~/env.mjs";
 
 export async function agent(input: string) {
-  console.log("inpiut in agent", input);
   const model = new OpenAI({
     openAIApiKey: env.OPENAI_API_KEY,
     temperature: 0,
   });
 
-  const tools = [];
+  const tools = [
+    toolCreator(new CreateFormCommand()),
+    toolCreator(new CreateInputCommand()),
+    toolCreator(new CreateLabelCommand()),
+    toolCreator(new CreateButtonCommand()),
+  ];
 
   const executor = await initializeAgentExecutorWithOptions(tools, model, {
     agentType: "zero-shot-react-description",

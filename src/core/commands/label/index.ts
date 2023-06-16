@@ -17,7 +17,7 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
   public description =
     "Creates a label in the form with the given value. Value is an string that contains the value of the label";
 
-  public create(input: string) {
+  public async create(input: string) {
     const validationResult = labelInput.safeParse(input);
 
     if (!validationResult.success) {
@@ -26,7 +26,7 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
 
     this.handler(input);
 
-    return "Label created successfully";
+    return Promise.resolve("Label created successfully!");
   }
 
   public handler = (input: LabelInputSchema) => {

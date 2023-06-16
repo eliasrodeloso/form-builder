@@ -16,7 +16,7 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
   public description =
     "Creates a button element in the form. Input is the value of the button.";
 
-  public create(input: string) {
+  public async create(input: string) {
     const validationResult = buttonValidationSchema.safeParse(input);
 
     if (!validationResult.success) {
@@ -25,7 +25,7 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
 
     this.handler(input);
 
-    return "Button created successfully";
+    return Promise.resolve("Button created successfully");
   }
 
   public handler = (input: ButtonValidationSchema) => {

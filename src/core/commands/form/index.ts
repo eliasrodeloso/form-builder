@@ -8,10 +8,10 @@ export class ClearFormCommand implements Command<void> {
   public description =
     "It clears the form by removing all the elements inside it";
 
-  public create() {
+  public async create() {
     this.handler();
 
-    return "Form cleared successfully";
+    return Promise.resolve("Form cleared successfully");
   }
 
   public handler = () => {
@@ -26,10 +26,10 @@ export class CreateFormCommand implements Command<void> {
   public type = CommandType.CreateForm;
   public description = "Creates a form element that can contain other elements";
 
-  public create() {
+  public async create() {
     this.handler();
 
-    return "Form created successfully";
+    return Promise.resolve("Form created successfully");
   }
 
   public handler = () => {

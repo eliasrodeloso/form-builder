@@ -9,6 +9,6 @@ export enum CommandType {
 export interface Command<ValidationSchema> {
   type: CommandType;
   description: string;
-  create: (input: string) => string;
+  create: (input: string) => Promise<string>;
   handler(value: ValidationSchema): void;
 }
