@@ -26,11 +26,12 @@ export class CreateFormCommand implements Command<void> {
   public type = CommandType.CreateForm;
   public description = "Creates a form element that can contain other elements";
 
-  public async create() {
-    this.handler();
+  public create = async () => {
+    console.log(this.type);
+    // this.handler();
 
     return Promise.resolve("Form created successfully");
-  }
+  };
 
   public handler = () => {
     const appState = applicationService.getApplicationState();

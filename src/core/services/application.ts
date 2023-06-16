@@ -10,24 +10,24 @@ export class ApplicationService {
     this.applicationState = new BehaviorSubject<ApplicationState>(initialState);
   }
 
-  public onApplicationState(): Observable<ApplicationState> {
+  public onApplicationState = (): Observable<ApplicationState> => {
     return this.applicationState.asObservable();
-  }
+  };
 
-  public updateApplicationState(
+  public updateApplicationState = (
     newState: ApplicationState,
     historyItem: HistoryItem
-  ) {
+  ) => {
     this.applicationState.next(newState);
 
     const history = historyService.getHistoryState();
 
     historyService.updateHistoryState([...history, historyItem]);
-  }
+  };
 
-  public getApplicationState(): ApplicationState {
+  public getApplicationState = (): ApplicationState => {
     return this.applicationState.value;
-  }
+  };
 }
 
 export let applicationService: ApplicationService;

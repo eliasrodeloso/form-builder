@@ -20,7 +20,9 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
   public description =
     "Creates a new HTML input element in the form with the specified <name> and <type> parameters. <name> is an string containing the name of the input. <type> is an string containing the type of the input and is defaulted to text if not specified. These parameters should be sent as a single string separated by a comma.";
 
-  public async create(input: string) {
+  public create = async (input: string) => {
+    console.log(this.type, input);
+
     const [inputName, inputType] = input
       .split(",")
       .map((param) => param.trim());
@@ -34,12 +36,12 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
       return validationResult.error.message;
     }
 
-    this.handler(validationResult.data);
+    // this.handler(validationResult.data);
 
     return Promise.resolve("Input created successfully!");
-  }
+  };
 
-  public handler(params: InputParamsSchema) {
+  public handler = (params: InputParamsSchema) => {
     const appState = applicationService.getApplicationState();
 
     applicationService.updateApplicationState(
@@ -56,5 +58,5 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
         type: this.type,
       }
     );
-  }
+  };
 }

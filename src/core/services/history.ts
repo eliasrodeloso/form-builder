@@ -9,17 +9,17 @@ export class HistoryService {
     this.history = new BehaviorSubject(initialHistory);
   }
 
-  public onHistoryState() {
+  public onHistoryState = () => {
     return this.history.asObservable();
-  }
+  };
 
-  public updateHistoryState(newState: HistoryState) {
+  public updateHistoryState = (newState: HistoryState) => {
     this.history.next(newState);
-  }
+  };
 
-  public getHistoryState() {
+  public getHistoryState = () => {
     return this.history.value;
-  }
+  };
 }
 
 export let historyService: HistoryService;

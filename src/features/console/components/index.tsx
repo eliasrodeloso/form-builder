@@ -2,10 +2,10 @@ import { type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
 import { useObservable } from "~/core/hooks/useObservable";
-import { applicationService } from "~/core/services/application";
+import { historyService } from "~/core/services/history";
 
 export function Console() {
-  const historyStore = useObservable(applicationService.onHistoryState());
+  const historyStore = useObservable(historyService.onHistoryState());
 
   const formSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -14,7 +14,8 @@ export function Console() {
     const data = new FormData(form);
     const command = data.get("commands") as string;
 
-    applicationService.addCommand(command);
+    console.log("command", command); // to be added to the history store
+
     form.reset();
   };
 
