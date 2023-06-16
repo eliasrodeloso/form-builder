@@ -24,20 +24,12 @@ export type HistoryItem = {
 
 export type HistoryState = HistoryItem[];
 
-export type Command = {
-  type: CommandType;
-  handler: (input: string, appState: ApplicationState) => ApplicationState;
-  historyHandler: (input: string, history: HistoryItem[]) => HistoryItem[];
-  tool: DynamicTool;
-};
-
-// just for poc
-export interface RefactoredCommand {
+export interface Command {
   type: CommandType;
   description: string;
   create: (input: string) => string;
-  handler?: (input: string, appState: ApplicationState) => ApplicationState;
-  historyHandler?: (input: string, history: HistoryItem[]) => HistoryItem[];
+  handler: <Schema>(labelValue: Schema) => void;
+  historyHandler: (commandInput: string) => void;
 }
 
 export type Commands = { [key in CommandType]?: Command };

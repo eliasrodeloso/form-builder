@@ -56,6 +56,10 @@ export class ApplicationService {
     return this.applicationState.asObservable();
   }
 
+  public updateApplicationState(newState: ApplicationState) {
+    this.applicationState.next(newState);
+  }
+
   public onHistoryState(): Observable<HistoryState> {
     return this.history.asObservable();
   }

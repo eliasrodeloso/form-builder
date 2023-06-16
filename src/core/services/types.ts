@@ -6,9 +6,7 @@ export type ViewType = typeof viewTypes[number];
 export type ViewElement = {
   id: number;
   viewType: ViewType;
-  type?: "password" | "text" | "submit" | "date";
-  value?: string;
-  name?: string;
+  component: React.ReactNode;
 };
 
 export type ApplicationState = ViewElement[];
