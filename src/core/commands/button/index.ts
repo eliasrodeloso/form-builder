@@ -1,50 +1,49 @@
-import { DynamicTool } from "langchain/tools";
+import { z } from "zod";
 
-import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
-import { type Command } from "~/core/commands/types";
-import {
-  type ApplicationState,
-  type ApplicationStateItem,
-} from "~/core/services/types";
+import { makeButton } from "~/core/commands/button/makeButton";
+import { CommandType, type Command } from "~/core/commands/types";
+import { applicationService } from "~/core/services/application";
+import { ViewTypes } from "~/core/services/types";
 
-export const buttonActions: Record<"create", Command> = {
-  create: {
-    type: "button.create",
-    handler: (input: string, appState: ApplicationState) => {
-      const { args } = commandAnalyzer(input);
-      const [value = "", typeInput = "submit"] = args ?? [];
+export const buttonValidationSchema = z.string().min(1, {
+  message: "Button value must be at least 1 character long",
+});
 
-      return [
+export type ButtonValidationSchema = z.infer<typeof buttonValidationSchema>;
+
+export class CreateButtonCommand implements Command<ButtonValidationSchema> {
+  public type = CommandType.CreateButton;
+  public description =
+    "Creates a button element in the form. Input is the value of the button.";
+
+  public create(input: string) {
+    const validationResult = buttonValidationSchema.safeParse(input);
+
+    if (!validationResult.success) {
+      return validationResult.error.message;
+    }
+
+    this.handler(input);
+
+    return "Button created successfully";
+  }
+
+  public handler = (input: ButtonValidationSchema) => {
+    const appState = applicationService.getApplicationState();
+
+    applicationService.updateApplicationState(
+      [
         ...appState,
         {
           id: appState.length + 1,
-          viewType: "button",
-          type: typeInput as ApplicationStateItem["type"],
-          value,
+          component: makeButton([input]),
+          viewType: ViewTypes.button,
         },
-      ];
-    },
-    historyHandler: (input: string, history) => {
-      const { type } = commandAnalyzer(input);
-
-      return [
-        ...history,
-        {
-          input: input,
-          type,
-        },
-      ];
-    },
-    tool: new DynamicTool({
-      name: "button",
-      description:
-        "Creates a button element in the form. Input is the value of the button.",
-      func: async (input, runManager) => {
-        console.log("input", input);
-        console.log("runManager", runManager);
-
-        return "Button created successfully!";
-      },
-    }),
-  },
-};
+      ],
+      {
+        input,
+        type: this.type,
+      }
+    );
+  };
+}
