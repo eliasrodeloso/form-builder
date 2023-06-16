@@ -37,7 +37,7 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
         {
           id: appState.length + 1,
           component: makeButton([input]),
-          viewType: ViewTypes.button,
+          viewType: ViewTypes.Button,
         },
       ],
       {

@@ -40,7 +40,7 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
         ...appState,
         {
           id: appState.length + 1,
-          viewType: ViewTypes.label,
+          viewType: ViewTypes.Label,
           component: makeLabel([value]),
         },
       ],

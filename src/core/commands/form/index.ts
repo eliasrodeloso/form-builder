@@ -1,35 +1,52 @@
-import { DynamicTool } from "langchain/tools";
+import { makeForm } from "~/core/commands/form/makeForm";
+import { CommandType, type Command } from "~/core/commands/types";
+import { applicationService } from "~/core/services/application";
+import { ViewTypes } from "~/core/services/types";
 
-import { type Command, type CommandAction } from "~/core/commands/types";
-import { type ApplicationState } from "~/core/services/types";
+export class ClearFormCommand implements Command<void> {
+  public type = CommandType.ClearForm;
+  public description =
+    "It clears the form by removing all the elements inside it";
 
-export const formActions: Record<CommandAction, Command> = {
-  clear: {
-    type: "form.clear",
-    handler: (_input: string, _appState: ApplicationState) => [],
-    historyHandler: (_input: string, history) => {
-      return [...history];
-    },
-    tool: new DynamicTool({
-      name: "form.clear",
-      description: "Clears all the items in the created form and start over",
-      func: async () => {
-        return Promise.resolve("form.clear");
-      },
-    }),
-  },
-  create: {
-    type: "form.create",
-    handler: (_input: string, _appState: ApplicationState) => [],
-    historyHandler: (_input: string, history) => {
-      return [...history];
-    },
-    tool: new DynamicTool({
-      name: "form.create",
-      description: "Creates the HTML form element in the DOM",
-      func: async () => {
-        return Promise.resolve("form.create");
-      },
-    }),
-  },
-};
+  public create() {
+    this.handler();
+
+    return "Form cleared successfully";
+  }
+
+  public handler = () => {
+    applicationService.updateApplicationState([], {
+      type: this.type,
+      input: "",
+    });
+  };
+}
+
+export class CreateFormCommand implements Command<void> {
+  public type = CommandType.CreateForm;
+  public description = "Creates a form element that can contain other elements";
+
+  public create() {
+    this.handler();
+
+    return "Form created successfully";
+  }
+
+  public handler = () => {
+    const appState = applicationService.getApplicationState();
+
+    applicationService.updateApplicationState(
+      [
+        {
+          id: appState.length + 1,
+          viewType: ViewTypes.Form,
+          component: makeForm(appState as React.ReactNode), // TODO: Fix this
+        },
+      ],
+      {
+        type: this.type,
+        input: "",
+      }
+    );
+  };
+}

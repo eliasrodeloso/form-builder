@@ -1,10 +1,11 @@
 import { type CommandType } from "~/core/commands/types";
 
 export enum ViewTypes {
-  "input" = "input",
-  "label" = "label",
-  "select" = "select",
-  "button" = "button",
+  Input = "input",
+  Label = "label",
+  Select = "select",
+  Button = "button",
+  Form = "form",
 }
 
 export type ViewElement = {

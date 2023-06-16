@@ -47,7 +47,7 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
         ...appState,
         {
           id: appState.length + 1,
-          viewType: ViewTypes.input,
+          viewType: ViewTypes.Input,
           component: makeInput([params.inputName, params.inputType]),
         },
       ],
