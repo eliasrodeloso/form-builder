@@ -2,7 +2,10 @@ import { DynamicTool } from "langchain/tools";
 
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { type Command } from "~/core/commands/types";
-import { type ApplicationState, type ViewElement } from "~/core/services/types";
+import {
+  type ApplicationState,
+  type ApplicationStateItem,
+} from "~/core/services/types";
 
 export const buttonActions: Record<"create", Command> = {
   create: {
@@ -16,7 +19,7 @@ export const buttonActions: Record<"create", Command> = {
         {
           id: appState.length + 1,
           viewType: "button",
-          type: typeInput as ViewElement["type"],
+          type: typeInput as ApplicationStateItem["type"],
           value,
         },
       ];
