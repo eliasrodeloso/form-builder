@@ -2,8 +2,9 @@ import { z } from "zod";
 
 import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { makeLabel } from "~/core/commands/label/makeLabel";
-import { type Command } from "~/core/commands/types";
+import { CommandType, type Command } from "~/core/commands/types";
 import { applicationService } from "~/core/services/application";
+import { ViewTypes } from "~/core/services/types";
 
 export const labelInput = z
   .string()
@@ -12,7 +13,7 @@ export const labelInput = z
 export type LabelInputSchema = z.infer<typeof labelInput>;
 
 export class LabelCommand implements Command {
-  public type = "label.create" as const;
+  public type = CommandType.CreateLabel;
   public description =
     "Creates a label in the form with the given value. Value is an string that contains the value of the label";
 
@@ -24,7 +25,6 @@ export class LabelCommand implements Command {
     }
 
     this.handler(input);
-    this.historyHandler(input);
 
     return "Label created successfully";
   }
@@ -35,27 +35,19 @@ export class LabelCommand implements Command {
 
     const appState = applicationService.getApplicationState();
 
-    applicationService.updateApplicationState([
-      ...appState,
+    applicationService.updateApplicationState(
+      [
+        ...appState,
+        {
+          id: appState.length + 1,
+          viewType: ViewTypes.label,
+          component: makeLabel([value]),
+        },
+      ],
       {
-        id: appState.length + 1,
-        viewType: "label" as const,
-        component: makeLabel([value]),
-      },
-    ]);
+        input: value,
+        type: this.type,
+      }
+    );
   };
-
-  public historyHandler(input: string) {
-    const { type } = commandAnalyzer(input);
-
-    const history = applicationService.getHistoryState();
-
-    applicationService.updateHistoryState([
-      ...history,
-      {
-        type,
-        input,
-      },
-    ]);
-  }
 }
