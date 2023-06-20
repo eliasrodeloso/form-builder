@@ -1,5 +1,9 @@
-import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import {
+  initializeAgentExecutorWithOptions,
+  type AgentExecutor,
+} from "langchain/agents";
 import { OpenAI } from "langchain/llms/openai";
+import { type DynamicTool } from "langchain/tools";
 
 import {
   CreateButtonCommand,
@@ -10,28 +14,47 @@ import { CreateFormCommand } from "~/core/commands/form";
 import { toolCreator } from "~/core/tools";
 import { env } from "~/env.mjs";
 
-export async function agent(input: string) {
-  const model = new OpenAI({
-    openAIApiKey: env.OPENAI_API_KEY,
-    temperature: 0,
-  });
+export class AgentService {
+  private agentExecutor: AgentExecutor;
 
-  const tools = [
+  constructor(agentExecutor: AgentExecutor) {
+    this.agentExecutor = agentExecutor;
+  }
+
+  async execute(input: string) {
+    const result = await this.agentExecutor.call({ input });
+
+    console.log("result", result);
+
+    return result.output as string;
+  }
+}
+
+async function createAgentService(tools?: DynamicTool[]) {
+  const defaultTools = [
     toolCreator(new CreateFormCommand()),
     toolCreator(new CreateInputCommand()),
     toolCreator(new CreateLabelCommand()),
     toolCreator(new CreateButtonCommand()),
+    ...(tools ?? []),
   ];
 
-  const executor = await initializeAgentExecutorWithOptions(tools, model, {
-    agentType: "zero-shot-react-description",
+  const model = new OpenAI({
+    openAIApiKey: env.NEXT_PUBLIC_OPENAI_API_KEY,
+    temperature: 0,
   });
 
-  console.log(`Executing with input "${input}"...`);
+  const executor = await initializeAgentExecutorWithOptions(
+    defaultTools,
+    model,
+    {
+      agentType: "zero-shot-react-description",
+    }
+  );
 
-  const result = await executor.call({ input });
+  const agentService = new AgentService(executor);
 
-  console.log(`Got output ${JSON.stringify(result.output, null, 2)}`);
-
-  return result.output as string;
+  return agentService;
 }
+
+export const agentService: AgentService = await createAgentService();
