@@ -1,6 +1,7 @@
 import { type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
+import { agentService } from "~/core/agent";
 import { useObservable } from "~/core/hooks/useObservable";
 import { historyService } from "~/core/services/history";
 
@@ -14,7 +15,14 @@ export function Console() {
     const data = new FormData(form);
     const command = data.get("commands") as string;
 
-    console.log("command", command); // to be added to the history store
+    agentService
+      .execute(command)
+      .then((output) => {
+        console.log("output", output);
+      })
+      .catch((error) => {
+        console.error("error", error);
+      });
 
     form.reset();
   };
