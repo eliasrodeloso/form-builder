@@ -25,6 +25,7 @@ export type HistoryItem = {
   id: string;
   userInput: string;
   executedCommands?: ExecutedCommandHistory[];
+  agentResponse?: string;
 };
 
 export type HistoryState = Map<string, HistoryItem>;

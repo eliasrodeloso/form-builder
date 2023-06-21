@@ -11,7 +11,7 @@ import {
   CreateInputCommand,
   CreateLabelCommand,
 } from "~/core/commands";
-import { CreateFormCommand } from "~/core/commands/form";
+import { ClearFormCommand, CreateFormCommand } from "~/core/commands/form";
 import { historyService } from "~/core/services/history";
 import { toolCreator } from "~/core/tools";
 import { env } from "~/env.mjs";
@@ -41,12 +41,33 @@ export class AgentService {
 
     const result = await this.agentExecutor.call({ input });
 
+    console.log("agent result", result);
+    this.addOutputToHistory(result.output as string);
+
     return result.output as string;
   }
+
+  private addOutputToHistory = (output: string) => {
+    const history = historyService.getHistoryState();
+
+    const lastItem = history.get(historyService.getLastHistoryItem ?? "");
+
+    if (!lastItem) {
+      return;
+    }
+
+    const newHistory = new Map(history).set(lastItem.id, {
+      ...lastItem,
+      agentResponse: output,
+    });
+
+    historyService.updateHistoryState(newHistory);
+  };
 }
 
 async function createAgentService(tools?: DynamicTool[]) {
   const defaultTools = [
+    toolCreator(new ClearFormCommand()),
     toolCreator(new CreateFormCommand()),
     toolCreator(new CreateLabelCommand()),
     toolCreator(new CreateInputCommand()),

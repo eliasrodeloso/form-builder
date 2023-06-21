@@ -15,11 +15,9 @@ export type ButtonValidationSchema = z.infer<typeof buttonValidationSchema>;
 export class CreateButtonCommand implements Command<ButtonValidationSchema> {
   public type = CommandType.CreateButton;
   public description =
-    "Creates a button element in the form. Input is the value of the button.";
+    'Creates a button element in the form. It receives a single paramter: <value>. <value> is the action of the button. This parameter should be sent as plain text. Example: "<value>"';
 
   public create = async (input: string) => {
-    console.log(this.type, input);
-
     const sanitized = sanitizeInputs(input);
     const validationResult = buttonValidationSchema.safeParse(sanitized);
 

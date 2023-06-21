@@ -46,6 +46,8 @@ export class ApplicationService {
 
 export let applicationService: ApplicationService;
 
-export function initializeApplicationService(initialHistory: ApplicationState) {
+export function initializeApplicationService(
+  initialHistory: ApplicationState = []
+) {
   applicationService = new ApplicationService(initialHistory);
 }

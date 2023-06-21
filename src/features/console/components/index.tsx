@@ -47,6 +47,7 @@ export function Console() {
                 <p>{`${command.type} ${command.input}`}</p>
               </Box>
             ))}
+            {item.agentResponse && <p>{item.agentResponse}</p>}
           </div>
         ))}
       </Box>
@@ -61,6 +62,7 @@ export function Console() {
           >
             Run
           </Button>
+          <Button type="submit"></Button>
         </chakra.form>
       </Box>
     </Grid>

@@ -16,14 +16,11 @@ export type LabelInputSchema = z.infer<typeof labelInput>;
 export class CreateLabelCommand implements Command<LabelInputSchema> {
   public type = CommandType.CreateLabel;
   public description =
-    "Creates a new HTML label that describes and precedes an HTML input in the form with the specified <value> and <inputName>. <value> is an string that contains the value of the label and is required. <inputName> is the name of the input it describes. These values should be sent as plain text separated by a comma without any type of quotes.";
+    'Creates a new HTML label that describes an HTML input in the form. It receives two parameters <value> and <inputName>. <value> contains the description and is required. <inputName> is the name of the input it describes and is required. These parameters should be sent as plain text separated by a comma and a space. Example: "<value>", <inputName>';
 
   public create = async (input: string) => {
-    console.log(this.type, input);
     const sanitized = sanitizeInputs(input);
-    const [labelValue, inputName] = sanitized
-      .split(",")
-      .map((param) => param.trim());
+    const [labelValue, inputName] = sanitized.split(",");
     const validationResult = labelInput.safeParse({
       value: labelValue,
       inputName,
@@ -47,11 +44,14 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
         {
           id: appState.length + 1,
           viewType: ViewTypes.Label,
-          component: makeLabel([params.value, params.inputName]),
+          component: makeLabel([
+            params.value.replaceAll('"', ""),
+            params.inputName,
+          ]),
         },
       ],
       {
-        input: [`"${params.value}"`].join(" "),
+        input: params.value,
         type: this.type,
       }
     );

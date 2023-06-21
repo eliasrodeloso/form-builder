@@ -9,7 +9,7 @@ import { Console } from "~/features/console/components";
 import { Viewer } from "~/features/viewer/components";
 
 const Home: NextPage = () => {
-  initializeApplicationService([]);
+  initializeApplicationService();
   initializeHistoryService();
 
   return (
