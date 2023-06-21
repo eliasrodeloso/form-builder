@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { makeButton } from "~/core/commands/button/makeButton";
 import { CommandType, type Command } from "~/core/commands/types";
+import { sanitizeInputs } from "~/core/helpers/sanitizeInput";
 import { applicationService } from "~/core/services/application";
 import { ViewTypes } from "~/core/services/types";
 
@@ -19,7 +20,8 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
   public create = async (input: string) => {
     console.log(this.type, input);
 
-    const validationResult = buttonValidationSchema.safeParse(input);
+    const sanitized = sanitizeInputs(input);
+    const validationResult = buttonValidationSchema.safeParse(sanitized);
 
     if (!validationResult.success) {
       return validationResult.error.message;
@@ -43,7 +45,7 @@ export class CreateButtonCommand implements Command<ButtonValidationSchema> {
         },
       ],
       {
-        input,
+        input: `"${input}"`,
         type: this.type,
       }
     );

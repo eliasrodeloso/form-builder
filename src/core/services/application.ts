@@ -2,7 +2,6 @@ import { BehaviorSubject, type Observable } from "rxjs";
 
 import { historyService } from "~/core/services/history";
 import {
-  HistoryItem,
   type ApplicationState,
   type ExecutedCommandHistory,
 } from "~/core/services/types";

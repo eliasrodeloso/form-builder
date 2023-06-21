@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { makeLabel } from "~/core/commands/label/makeLabel";
 import { CommandType, type Command } from "~/core/commands/types";
+import { sanitizeInputs } from "~/core/helpers/sanitizeInput";
 import { applicationService } from "~/core/services/application";
 import { ViewTypes } from "~/core/services/types";
 
@@ -15,11 +16,12 @@ export type LabelInputSchema = z.infer<typeof labelInput>;
 export class CreateLabelCommand implements Command<LabelInputSchema> {
   public type = CommandType.CreateLabel;
   public description =
-    "Creates a new HTML label that describes and precedes an HTML input in the form with the specified <value> and <inputName>. <value> is an string that contains the value of the label and is required. <inputName> is the name of the input it describes. Both values should be sent as a single string separated by a comma.";
+    "Creates a new HTML label that describes and precedes an HTML input in the form with the specified <value> and <inputName>. <value> is an string that contains the value of the label and is required. <inputName> is the name of the input it describes. These values should be sent as plain text separated by a comma without any type of quotes.";
 
   public create = async (input: string) => {
     console.log(this.type, input);
-    const [labelValue, inputName] = input
+    const sanitized = sanitizeInputs(input);
+    const [labelValue, inputName] = sanitized
       .split(",")
       .map((param) => param.trim());
     const validationResult = labelInput.safeParse({
@@ -49,7 +51,7 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
         },
       ],
       {
-        input: [params.value, params.inputName].join(", "),
+        input: [`"${params.value}"`].join(" "),
         type: this.type,
       }
     );
