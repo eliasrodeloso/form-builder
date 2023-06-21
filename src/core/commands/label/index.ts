@@ -15,7 +15,7 @@ export type LabelInputSchema = z.infer<typeof labelInput>;
 export class CreateLabelCommand implements Command<LabelInputSchema> {
   public type = CommandType.CreateLabel;
   public description =
-    "Creates a label in the form with the given value. Value is an string that contains the value of the label";
+    "Creates a label in the form with the given value. Value is an string that contains the value of the label and is required. This label is related to an input through the input name.";
 
   public create = async (input: string) => {
     console.log(this.type, input);

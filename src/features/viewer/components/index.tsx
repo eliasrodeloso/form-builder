@@ -9,9 +9,9 @@ export function Viewer() {
   return (
     <Container maxW="550" minW="300">
       <Box my={24}>
-        {appState?.map(({ viewType: ViewType, ...view }) => {
-          return <ViewType key={`component-${view.id}`} {...view} />;
-        })}
+        {appState?.map(({ component: Component, id }) => (
+          <Component key={`generated-component-${id}`} />
+        ))}
       </Box>
     </Container>
   );
