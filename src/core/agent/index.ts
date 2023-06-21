@@ -4,6 +4,7 @@ import {
 } from "langchain/agents";
 import { OpenAI } from "langchain/llms/openai";
 import { type DynamicTool } from "langchain/tools";
+import { v4 as uuid } from "uuid";
 
 import {
   CreateButtonCommand,
@@ -11,6 +12,7 @@ import {
   CreateLabelCommand,
 } from "~/core/commands";
 import { CreateFormCommand } from "~/core/commands/form";
+import { historyService } from "~/core/services/history";
 import { toolCreator } from "~/core/tools";
 import { env } from "~/env.mjs";
 
@@ -22,9 +24,22 @@ export class AgentService {
   }
 
   async execute(input: string) {
-    const result = await this.agentExecutor.call({ input });
+    const history = historyService.getHistoryState();
 
-    console.log("result", result);
+    historyService.clearLastHistoryItem();
+
+    const id = uuid();
+
+    historyService.updateHistoryState(
+      new Map(history).set(id, {
+        id,
+        userInput: `Executing "${input}"`,
+      })
+    );
+
+    historyService.updateLastHistoryItem(id);
+
+    const result = await this.agentExecutor.call({ input });
 
     return result.output as string;
   }
@@ -33,8 +48,8 @@ export class AgentService {
 async function createAgentService(tools?: DynamicTool[]) {
   const defaultTools = [
     toolCreator(new CreateFormCommand()),
-    toolCreator(new CreateInputCommand()),
     toolCreator(new CreateLabelCommand()),
+    toolCreator(new CreateInputCommand()),
     toolCreator(new CreateButtonCommand()),
     ...(tools ?? []),
   ];

@@ -1,39 +1,42 @@
 import { z } from "zod";
 
-import { commandAnalyzer } from "~/core/commands/helpers/analyzer";
 import { makeLabel } from "~/core/commands/label/makeLabel";
 import { CommandType, type Command } from "~/core/commands/types";
 import { applicationService } from "~/core/services/application";
 import { ViewTypes } from "~/core/services/types";
 
-export const labelInput = z
-  .string()
-  .min(1, "Label name must be at least 1 character long");
+export const labelInput = z.object({
+  value: z.string().min(1, "Label name must be at least 1 character long"),
+  inputName: z.string().min(1, "Input name must be at least 1 character long"),
+});
 
 export type LabelInputSchema = z.infer<typeof labelInput>;
 
 export class CreateLabelCommand implements Command<LabelInputSchema> {
   public type = CommandType.CreateLabel;
   public description =
-    "Creates a label in the form with the given value. Value is an string that contains the value of the label and is required. This label is related to an input through the input name.";
+    "Creates a new HTML label that describes and precedes an HTML input in the form with the specified <value> and <inputName>. <value> is an string that contains the value of the label and is required. <inputName> is the name of the input it describes. Both values should be sent as a single string separated by a comma.";
 
   public create = async (input: string) => {
     console.log(this.type, input);
-    const validationResult = labelInput.safeParse(input);
+    const [labelValue, inputName] = input
+      .split(",")
+      .map((param) => param.trim());
+    const validationResult = labelInput.safeParse({
+      value: labelValue,
+      inputName,
+    });
 
     if (!validationResult.success) {
       return validationResult.error.message;
     }
 
-    this.handler(input);
+    this.handler(validationResult.data);
 
     return Promise.resolve("Label created successfully!");
   };
 
-  public handler = (input: LabelInputSchema) => {
-    const { args } = commandAnalyzer(input);
-    const [value = ""] = args ?? [];
-
+  public handler = (params: LabelInputSchema) => {
     const appState = applicationService.getApplicationState();
 
     applicationService.updateApplicationState(
@@ -42,11 +45,11 @@ export class CreateLabelCommand implements Command<LabelInputSchema> {
         {
           id: appState.length + 1,
           viewType: ViewTypes.Label,
-          component: makeLabel([value]),
+          component: makeLabel([params.value, params.inputName]),
         },
       ],
       {
-        input: value,
+        input: [params.value, params.inputName].join(", "),
         type: this.type,
       }
     );

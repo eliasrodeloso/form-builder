@@ -18,7 +18,7 @@ export type InputParamsSchema = z.infer<typeof inputParams>;
 export class CreateInputCommand implements Command<InputParamsSchema> {
   public type = CommandType.CreateInput;
   public description =
-    "Creates a new HTML input element in the form with the specified <name> and <type> parameters. <name> is an string containing the name of the input. <type> is an string containing the type of the input and is defaulted to text if not specified. These parameters should be sent as a single string separated by a comma.";
+    "Creates a new HTML input element in the form with the specified <name> and <type> parameters. This input should be created afert its label. <name> is an string containing the name of the input. <type> is an string containing the type of the input and is defaulted to text if not specified. These parameters should be sent as a single string separated by a comma.";
 
   public create = async (input: string) => {
     console.log(this.type, input);

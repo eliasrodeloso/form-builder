@@ -27,6 +27,8 @@ export function Console() {
     form.reset();
   };
 
+  const history = historyStore?.values() ?? [];
+
   return (
     <Grid
       height="100%"
@@ -34,9 +36,17 @@ export function Console() {
       gridTemplateRows="1fr 100px"
     >
       <Box p={2}>
-        {historyStore?.map((command, index) => (
-          <div key={`${command.type}-${command.input ?? ""}-${index}`}>
-            <p>{command.input}</p>
+        {[...history].map((item) => (
+          <div key={item.id}>
+            <p>{item.userInput}</p>
+            {item.executedCommands?.map((command, index) => (
+              <Box
+                ml={2}
+                key={`command-${command.type}-${command.input}-${index}`}
+              >
+                <p>{`${command.type} ${command.input}`}</p>
+              </Box>
+            ))}
           </div>
         ))}
       </Box>

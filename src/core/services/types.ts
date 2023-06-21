@@ -16,9 +16,15 @@ export type ViewElement = {
 
 export type ApplicationState = ViewElement[];
 
-export type HistoryItem = {
+export type ExecutedCommandHistory = {
   type: CommandType;
   input: string;
 };
 
-export type HistoryState = HistoryItem[];
+export type HistoryItem = {
+  id: string;
+  userInput: string;
+  executedCommands?: ExecutedCommandHistory[];
+};
+
+export type HistoryState = Map<string, HistoryItem>;

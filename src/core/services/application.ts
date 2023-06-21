@@ -1,7 +1,11 @@
 import { BehaviorSubject, type Observable } from "rxjs";
 
 import { historyService } from "~/core/services/history";
-import { type ApplicationState, type HistoryItem } from "~/core/services/types";
+import {
+  HistoryItem,
+  type ApplicationState,
+  type ExecutedCommandHistory,
+} from "~/core/services/types";
 
 export class ApplicationService {
   private applicationState: BehaviorSubject<ApplicationState>;
@@ -16,13 +20,24 @@ export class ApplicationService {
 
   public updateApplicationState = (
     newState: ApplicationState,
-    historyItem: HistoryItem
+    historyItem: ExecutedCommandHistory
   ) => {
     this.applicationState.next(newState);
 
     const history = historyService.getHistoryState();
 
-    historyService.updateHistoryState([...history, historyItem]);
+    const lastItem = history.get(historyService.getLastHistoryItem ?? "");
+
+    if (!lastItem) {
+      return;
+    }
+
+    const newHistory = new Map(history).set(lastItem.id, {
+      ...lastItem,
+      executedCommands: [...(lastItem?.executedCommands || []), historyItem],
+    });
+
+    historyService.updateHistoryState(newHistory);
   };
 
   public getApplicationState = (): ApplicationState => {
