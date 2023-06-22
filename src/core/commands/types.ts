@@ -5,6 +5,7 @@ export enum CommandType {
   CreateButton = "button.create",
   ClearForm = "form.clear",
   CreateForm = "form.create",
+  AgentExecute = "agent.execute",
 }
 export interface Command<ValidationSchema> {
   type: CommandType;

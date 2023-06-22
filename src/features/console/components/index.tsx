@@ -2,6 +2,7 @@ import { type FormEvent } from "react";
 import { Box, Button, chakra, Grid, Input } from "@chakra-ui/react";
 
 import { agentService } from "~/core/agent";
+import { AgentExecuteCommand } from "~/core/commands/agent";
 import { useObservable } from "~/core/hooks/useObservable";
 import { historyService } from "~/core/services/history";
 
@@ -25,6 +26,27 @@ export function Console() {
       });
 
     form.reset();
+  };
+
+  const agentRun: React.ReactEventHandler<HTMLButtonElement> = (event) => {
+    const inputEl = document.getElementById("commandInput") as HTMLInputElement;
+    const target = event.target as HTMLButtonElement;
+
+    const agentCommand = new AgentExecuteCommand();
+
+    if (!inputEl.value.includes(agentCommand.type)) {
+      return;
+    }
+
+    target.disabled = true;
+
+    const command = inputEl.value.replace(agentCommand.type, "").trim();
+
+    agentCommand.create(command).finally(() => {
+      target.disabled = false;
+    });
+
+    inputEl.value = "";
   };
 
   const history = historyStore?.values() ?? [];
@@ -53,7 +75,12 @@ export function Console() {
       </Box>
       <Box display="flex" alignItems="flex-end" mx={-4} my={-2}>
         <chakra.form onSubmit={formSubmitHandler} display="flex" width="100%">
-          <Input type="text" name="commands" borderRadius="0" />
+          <Input
+            id="commandInput"
+            type="text"
+            name="commands"
+            borderRadius="0"
+          />
           <Button
             type="submit"
             backgroundColor="black"
@@ -62,7 +89,16 @@ export function Console() {
           >
             Run
           </Button>
-          <Button type="submit"></Button>
+          <Button
+            type="button"
+            backgroundColor="white"
+            color="black"
+            borderRadius="none"
+            borderWidth={1}
+            onClick={agentRun}
+          >
+            Agent Run
+          </Button>
         </chakra.form>
       </Box>
     </Grid>
