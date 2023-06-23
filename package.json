@@ -22,6 +22,7 @@
     "react-query": "^3.39.3",
     "rxjs": "^7.8.1",
     "uuid": "^9.0.0",
+    "yup": "^1.2.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

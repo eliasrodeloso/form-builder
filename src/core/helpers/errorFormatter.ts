@@ -1,12 +1,10 @@
-import { type ZodError } from "zod";
+import { type ValidationError } from "yup";
 
-export function errorFormatter(error: ZodError) {
-  return error.issues
+export function errorFormatter(error: ValidationError) {
+  return error.inner
     .map(
       (issue) =>
-        `The parameter "${issue.path.join(
-          "."
-        )}" you sent is invalid. The reason is the following: ${issue.message}`
+        `The parameter "${issue.name}" you sent is invalid. The reason is the following: ${issue.message}`
     )
     .join("\n");
 }

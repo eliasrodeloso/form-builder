@@ -9,7 +9,7 @@ export enum ViewTypes {
 }
 
 export type ViewElement = {
-  id: number;
+  id: string;
   viewType: ViewTypes;
   component: React.FC;
 };

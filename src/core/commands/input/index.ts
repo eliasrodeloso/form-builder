@@ -1,42 +1,43 @@
-import { z } from "zod";
+import { v4 as uuid } from "uuid";
+import * as y from "yup";
 
 import { makeInput } from "~/core/commands/input/makeInput";
-import { CommandType, type Command } from "~/core/commands/types";
-import { errorFormatter } from "~/core/helpers/errorFormatter";
-import { sanitizeInputs } from "~/core/helpers/sanitizeInput";
+import { CommandBase, CommandType, type Command } from "~/core/commands/types";
 import { applicationService } from "~/core/services/application";
 import { ViewTypes } from "~/core/services/types";
 
-export const inputParams = z.object({
-  name: z.string(),
-  type: z
-    .enum(["text", "number", "password", "email", "date"])
-    .optional()
-    .default("text"),
+enum InputTypes {
+  Text = "text",
+  Number = "number",
+  Password = "password",
+  Email = "email",
+  Date = "date",
+}
+
+export const inputParams = y.object({
+  name: y.string().required(),
+  type: y.mixed<InputTypes>().optional().default(InputTypes.Text),
 });
 
-export type InputParamsSchema = z.infer<typeof inputParams>;
+export type InputParamsSchema = y.InferType<typeof inputParams>;
 
-export class CreateInputCommand implements Command<InputParamsSchema> {
-  public type = CommandType.CreateInput;
-  public description =
-    'Creates a new HTML input element in the form. It receives two parameters: <name> and <type>. <name> is the name of the input. <type> is type of the input and is defaulted to text if not specified, other values for <type> are: "number", "password", "email", "date". These parameters should be sent as plain text separated by a comma and a space. Example: "<name>", <type>';
+export class CreateInputCommand
+  extends CommandBase<InputParamsSchema>
+  implements Command<InputParamsSchema>
+{
+  constructor() {
+    super(
+      CommandType.CreateInput,
+      'Creates a new HTML input element in the form. It receives two parameters: <name> and <type>. <name> is the name of the input. <type> is type of the input and is defaulted to text if not specified, other values for <type> are: "number", "password", "email", "date". These parameters should be sent as plain text separated by a comma and a space. Example: "<name>", <type>',
+      inputParams
+    );
+  }
 
   public create = async (input: string) => {
-    const sanitized = sanitizeInputs(input);
-    const [name, type] = sanitized.split(",").map((param) => param.trim());
+    const params = this.validateInput(input);
 
-    const validationResult = inputParams.safeParse({
-      name,
-      type,
-    });
-
-    if (!validationResult.success) {
-      const message = errorFormatter(validationResult.error);
-      return message;
-    }
-
-    this.handler(validationResult.data);
+    this.handler(params);
+    this.registerHistory(params);
 
     return Promise.resolve("Input created successfully!");
   };
@@ -44,19 +45,13 @@ export class CreateInputCommand implements Command<InputParamsSchema> {
   public handler = (params: InputParamsSchema) => {
     const appState = applicationService.getApplicationState();
 
-    applicationService.updateApplicationState(
-      [
-        ...appState,
-        {
-          id: appState.length + 1,
-          viewType: ViewTypes.Input,
-          component: makeInput([params.name, params.type]),
-        },
-      ],
+    applicationService.updateApplicationState([
+      ...appState,
       {
-        input: [`"${params.name}"`, params.type].join(" "),
-        type: this.type,
-      }
-    );
+        id: uuid(),
+        viewType: ViewTypes.Input,
+        component: makeInput([params.name, params.type]),
+      },
+    ]);
   };
 }
